@@ -16,11 +16,13 @@ public class MainGameState : ScriptableObject, IState
         player = GameObject.Instantiate(PlayerPrototype);
         player.transform.position = PlayerSpawnLocation;
         Juicer.CreateFx(0, PlayerSpawnLocation);
+        Juicer.ShakeCamera(0.5f);
         MusicBox.ChangeMusic((int)Song.Boss);
-        DataDump.Set("HP", 130);
+        DataDump.Set("HP", 20);
         var cam = GameObject.Find("CinemachineStateCamera/GameCam").GetComponent<CinemachineVirtualCamera>();
         cam.Follow = player.transform;
         cam.LookAt = player.transform;
+        GameConductor.SetShowHud(true);
     }
 
     public IEnumerator OnUpdate()
@@ -32,6 +34,7 @@ public class MainGameState : ScriptableObject, IState
         } while (DataDump.Get<int>("HP") > 0);
         Juicer.CreateFx(0, player.transform.position);
         GameObject.Destroy(player);
+        Juicer.ShakeCamera(1.5f);
         bool readyToMoveOn = false;
         MessageController.AddMessage("butterboi is dead now.", postAction: () => readyToMoveOn = true);
         while (!readyToMoveOn)
@@ -42,6 +45,8 @@ public class MainGameState : ScriptableObject, IState
 
     public void OnExit()
     {
-        // set next state
+        GameConductor.SetShowHud(false);
+        ScreenFader.FadeOut();
+        NextState = new CreditsState();
     }
 }

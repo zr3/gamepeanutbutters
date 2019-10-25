@@ -1,29 +1,62 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Audio;
 
 public class Poofer : MonoBehaviour {
 
+    public AudioClip[] AudioClips;
+    public AudioMixerGroup SfxMixerGroup;
+    public float Interval = 0.5f;
     private ParticleSystem ps;
-    private float lastMovement = 0.6f;
+    private AudioSource @as;
     private Vector3 lastPosition;
+    private Coroutine playCoroutine;
 
 	void Start () {
-        ps = GetComponentInChildren<ParticleSystem>();
+        ps = GetComponent<ParticleSystem>();
+        if (AudioClips.Length > 0) @as = gameObject.AddComponent<AudioSource>();
+        if (SfxMixerGroup && @as) @as.outputAudioMixerGroup = SfxMixerGroup;
         lastPosition = transform.position;
 	}
 
+    bool isMoving = false;
 	void Update () {
-        lastMovement += Time.deltaTime;
-		if (lastPosition != transform.position)
+        bool wasMoving = isMoving;
+        isMoving = lastPosition != transform.position;
+
+        if (isMoving && !wasMoving)
         {
-            lastMovement = 0;
+            playCoroutine = StartCoroutine(PlayCoroutine());
+        } else if (wasMoving && !isMoving)
+        {
+            StopCoroutine(playCoroutine);
+            playCoroutine = null;
         }
-        if (lastMovement > 0.2f && ps.isPlaying)
-        {
-            ps.Stop();
-        } else if (lastMovement == 0 && !ps.isPlaying)
+        lastPosition = transform.position;
+    }
+
+    IEnumerator PlayCoroutine()
+    {
+        infinite:
+            TryPlayParticles();
+            TryPlaySound();
+            yield return new WaitForSeconds(Interval);
+        goto infinite;
+    }
+
+    private void TryPlayParticles()
+    {
+        if (ps)
         {
             ps.Play();
         }
-        lastPosition = transform.position;
-	}
+    }
+
+    private void TryPlaySound()
+    {
+        if (@as)
+        {
+            @as.PlayOneShot(AudioClips[Random.Range(0, AudioClips.Length)]);
+        }
+    }
 }

@@ -44,5 +44,5 @@ public class MusicClip : ScriptableObject
         || VampEnd.Bar != Endings[Endings.Length - 1].Bar
         || VampEnd.Beat != Endings[Endings.Length - 1].Beat;
 
-    public double LoopLength => VampEnd.InSeconds(BeatsPerBar, BPM) - Beginning.InSeconds(BeatsPerBar, BPM);
+    public double LoopLength => VampEnd.InSeconds(BeatsPerBar, BPM) - IntroEnd.InSeconds(BeatsPerBar, BPM);
 }

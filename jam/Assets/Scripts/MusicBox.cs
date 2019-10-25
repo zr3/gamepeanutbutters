@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Events;
+using UnityEngine.Playables;
 
 public class MusicBox : MonoBehaviour {
     public static MusicClip CurrentClip { get; private set; }
@@ -14,6 +15,7 @@ public class MusicBox : MonoBehaviour {
 
     [Header("Configuration")]
     public MusicClip[] MusicClips;
+    public AudioClip[] AmbientClips;
 
     [Header("Events")]
     public UnityEvent OnClipScheduled;
@@ -43,26 +45,37 @@ public class MusicBox : MonoBehaviour {
     private bool usingChannelA = true;
     private Channel channelA;
     private Channel channelB;
+    private Stack<(AudioSource, AudioPlayableOutput)> unusedAudioSourcePool = new Stack<(AudioSource, AudioPlayableOutput)>();
 
     private static MusicBox _instance;
 
     private void Awake()
     {
         _instance = this.CheckSingleton(_instance);
-    }
-
-    void Start ()
-    {
         if (!MusicClips.Any())
         {
             return;
         }
-        musicMixer.outputAudioMixerGroup = musicMixerGroup;
-        channelA = new Channel(this, channelAMixerGroup);
-        channelB = new Channel(this, channelBMixerGroup);
-        channelA.LoadClip(MusicClips[0]);
-        channelA.PlayAt(3);
+
+        playableGraph = PlayableGraph.Create();
+
+        //var audioSource = gameObject.AddComponent<AudioSource>();
+        //audioSource.outputAudioMixerGroup = musicMixerGroup;
+        //var playableOutput = AudioPlayableOutput.Create(playableGraph, "MusicOut", audioSource);
+        //playableOutput.SetSourceOutputPort(0);
+        //mixerPlayable = AudioMixerPlayable.Create(playableGraph);
+        //playableOutput.SetSourcePlayable(mixerPlayable, 0);
     }
+
+    private void OnDisable()
+    {
+        playableGraph.Destroy();
+    }
+
+    private PlayableGraph playableGraph;
+    private ScriptPlayable<MusicBoxPlayable> musicboxPlayablePlayable;
+    private MusicChannel musicChannel;
+    private AudioMixerPlayable mixerPlayable;
 
     private int currentBeat = 0;
     private int numBeats = 0;
@@ -89,32 +102,68 @@ public class MusicBox : MonoBehaviour {
 
     private void changeMusic(int index)
     {
-        double switchTime;
-        MusicClip currentClip;
-        MusicClip nextClip = MusicClips[index];
-        if (usingChannelA)
+        var delay = musicChannel == null ? 0 : musicChannel.Stop();
+
+        var musicChannelPlayable = ScriptPlayable<MusicChannel>.Create(playableGraph);
+        musicChannel = musicChannelPlayable.GetBehaviour();
+        musicChannel.Load(MusicClips[index], musicChannelPlayable, playableGraph);
+        musicChannel.Play(delay);
+
+        var audioSource = PooledAudioSource;
+        var playableOutput = audioSource.Item2;
+        playableOutput.SetSourcePlayable(musicChannelPlayable, 0);
+
+        musicChannel.OnFinished = () =>
         {
-            currentClip = channelA.MusicClip;
-            channelB.LoadClip(nextClip);
-            switchTime = channelA.Stop();
-            channelB.PlayAt(switchTime);
-        } else
+            PoolAudioSource(audioSource);
+            playableGraph.Disconnect(musicChannelPlayable, 0);
+        };
+
+        if (!playableGraph.IsPlaying()) playableGraph.Play();
+    }
+
+    public static void PlayAmbience(int index)
+    {
+        _instance.playAmbience(index);
+    }
+
+    private void playAmbience(int index)
+    {
+        var audioSource = CreateAudioSource();
+        audioSource.loop = true;
+        audioSource.clip = AmbientClips[index];
+        audioSource.Play();
+    }
+
+    private AudioSource CreateAudioSource()
+    {
+        var audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.outputAudioMixerGroup = musicMixerGroup;
+        audioSource.spatialize = false;
+        audioSource.playOnAwake = false;
+        return audioSource;
+    }
+
+    private (AudioSource, AudioPlayableOutput) PooledAudioSource
+    {
+        get
         {
-            currentClip = channelB.MusicClip;
-            channelA.LoadClip(nextClip);
-            switchTime = channelB.Stop();
-            channelA.PlayAt(switchTime);
+            if (unusedAudioSourcePool.Count > 0)
+            {
+                return unusedAudioSourcePool.Pop();
+            } else
+            {
+                var audioSource = CreateAudioSource();
+                var playableOutput = AudioPlayableOutput.Create(playableGraph, "MusicOut", audioSource);
+                playableOutput.SetSourceOutputPort(0);
+                return (audioSource, playableOutput);
+            }
         }
-        usingChannelA = !usingChannelA;
-        CurrentClip = currentClip;
-        NextClip = nextClip;
-        IEnumerator updateClipReferences()
-        {
-            yield return new WaitForSeconds(Convert.ToSingle(switchTime - AudioSettings.dspTime));
-            CurrentClip = nextClip;
-            NextClip = null;
-        }
-        StartCoroutine(updateClipReferences());
+    }
+
+    private void PoolAudioSource((AudioSource, AudioPlayableOutput) value)
+    {
+        unusedAudioSourcePool.Push(value);
     }
 
     private class Channel

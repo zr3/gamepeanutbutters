@@ -6,8 +6,9 @@ public class IntroState : IState
 {
     public IState NextState { get; private set; }
 
-    public void OnEnter() {
-        GameConductor.CameraStateTrigger("NextState");
+    public void OnEnter()
+    {
+        GameConductor.CameraStateTrigger("Initialize");
         MusicBox.ChangeMusic(Song.Game.ToInt());
     }
 
@@ -18,7 +19,6 @@ public class IntroState : IState
         ScreenFader.FadeInThen(() =>
         {
             Juicer.ShakeCamera(0.5f);
-            Juicer.CreateFx(0, new Vector3(-30.284f, 1.5f, -1.721f));
             MessageController.AddMessage("yo.");
             MessageController.AddMessage("this is game peanutbutters.");
             MessageController.AddMessage("it goes great with game jams.");

@@ -12,6 +12,7 @@ public partial class GameConductor : MonoBehaviour
         get => HUD.activeInHierarchy;
         set => HUD.SetActive(value);
     }
+    public static void SetShowHud(bool value) => _instance.ShowHud = value;
     public ScriptableObject[] ScriptableObjectGameStates;
 
     [Header("References")]
@@ -19,7 +20,8 @@ public partial class GameConductor : MonoBehaviour
     public Animator CameraAnimator;
 
     private static GameConductor _instance;
-    private enum Hook {
+    protected enum Hook {
+        OnMainMenuStart,
         OnGameStart
     }
     private void CallHook(Hook hook) => gameObject.SendMessage(hook.ToString());
@@ -36,6 +38,7 @@ public partial class GameConductor : MonoBehaviour
         if (LoadTitleScene)
         {
             SceneManager.LoadScene("Title", LoadSceneMode.Additive);
+            CallHook(Hook.OnMainMenuStart);
         } else
         {
             CallHook(Hook.OnGameStart);

@@ -9,7 +9,7 @@ public class Juicer : MonoBehaviour
     public GameObject[] Fx;
 
     [Header("References")]
-    public CinemachineVirtualCamera Camera;
+    public CinemachineCameraShake Camera;
 
     private static Juicer _instance;
 
@@ -17,13 +17,11 @@ public class Juicer : MonoBehaviour
     private NoiseSettings initialProfile;
     private float initialAmplitudeGain;
     private float initialFrequencyGain;
-    private CinemachineBasicMultiChannelPerlin noiseComponent;
     private Coroutine shakeCoroutine;
 
     private void Awake()
     {
         _instance = this.CheckSingleton(_instance);
-        noiseComponent = Camera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
     public static void ShakeCamera(float intensity = 1f)
@@ -33,13 +31,7 @@ public class Juicer : MonoBehaviour
 
     private void NonStaticShakeCamera(float intensity)
     {
-        if (shakeCoroutine == null)
-        {
-            initialProfile = noiseComponent.m_NoiseProfile;
-            initialAmplitudeGain = noiseComponent.m_AmplitudeGain;
-            initialFrequencyGain = noiseComponent.m_FrequencyGain;
-        }
-        else
+        if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
         }
@@ -47,17 +39,12 @@ public class Juicer : MonoBehaviour
 
         IEnumerator ShakeCoroutine()
         {
-            noiseComponent.m_NoiseProfile = _instance.CameraShakeProfile;
-
-            for (float i = 0.5f; i > 0; i -= 0.1f)
+            for (float i = 0.5f; i > 0; i -= Time.deltaTime)
             {
-                noiseComponent.m_AmplitudeGain = i * intensity;
-                yield return new WaitForSeconds(0.1f);
+                Camera.Blend = i * intensity * 2f;
+                yield return null;
             }
-
-            noiseComponent.m_NoiseProfile = initialProfile;
-            noiseComponent.m_AmplitudeGain = initialAmplitudeGain;
-            noiseComponent.m_FrequencyGain = initialFrequencyGain;
+            Camera.Blend = 0;
         }
     }
 

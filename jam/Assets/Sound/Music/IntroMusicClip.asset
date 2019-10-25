@@ -24,8 +24,8 @@ MonoBehaviour:
   - Bar: 5
     Beat: 1
   IntroEnd:
-    Bar: 1
+    Bar: 3
     Beat: 1
   VampEnd:
-    Bar: 3
+    Bar: 4
     Beat: 1

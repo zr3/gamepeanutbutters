@@ -11,6 +11,12 @@ public enum Song
 
 public partial class GameConductor : MonoBehaviour
 {
+    void OnMainMenuStart()
+    {
+        MusicBox.ChangeMusic((int)Song.Intro);
+        MusicBox.PlayAmbience(0);
+    }
+
     void OnGameStart()
     {
         IEnumerator stateMachine(IState state)
