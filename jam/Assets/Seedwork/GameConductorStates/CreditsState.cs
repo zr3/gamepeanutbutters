@@ -7,6 +7,7 @@ public class CreditsState : IState
 
     public void OnEnter() {
         MusicBox.ChangeMusic((int)Song.Final);
+        MusicBox.Instance.FadeInTrack(1);
         CreditRoller.RollCredits();
     }
 

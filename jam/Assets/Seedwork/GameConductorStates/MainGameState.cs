@@ -9,7 +9,7 @@ public class MainGameState : ScriptableObject, IState
     public Vector3 PlayerSpawnLocation;
 
     private GameObject player;
-
+    private const int maxHP = 25;
     public IState NextState { get; private set; }
 
     public void OnEnter() {
@@ -18,7 +18,8 @@ public class MainGameState : ScriptableObject, IState
         Juicer.CreateFx(0, PlayerSpawnLocation);
         Juicer.ShakeCamera(0.5f);
         MusicBox.ChangeMusic((int)Song.Boss);
-        DataDump.Set("HP", 20);
+        DataDump.Set("HP", maxHP);
+        DataDump.Set("ScaledHP", 1.0f);
         var cam = GameObject.Find("CinemachineStateCamera/GameCam").GetComponent<CinemachineVirtualCamera>();
         cam.Follow = player.transform;
         cam.LookAt = player.transform;
@@ -29,7 +30,9 @@ public class MainGameState : ScriptableObject, IState
     {
         do
         {
-            DataDump.Set("HP", DataDump.Get<int>("HP") - 1);
+            int currentHP = DataDump.Get<int>("HP") - 1;
+            DataDump.Set("HP", currentHP);
+            DataDump.Set("ScaledHP", (float) currentHP / maxHP);
             yield return new WaitForSeconds(1);
         } while (DataDump.Get<int>("HP") > 0);
         Juicer.CreateFx(0, player.transform.position);

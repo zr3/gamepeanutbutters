@@ -24,6 +24,7 @@ public partial class GameConductor : MonoBehaviour
             do
             {
                 Debug.Log($"Entering state {state.GetType()}");
+                DataDump.Set("StateTitle", state.GetType().ToString());
                 state.OnEnter();
                 yield return state.OnUpdate();
                 Debug.Log($"Exiting state {state.GetType()}");

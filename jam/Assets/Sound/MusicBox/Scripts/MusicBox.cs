@@ -170,4 +170,14 @@ public class MusicBox : MonoBehaviour {
     {
         unusedAudioSourcePool.Push(value);
     }
+
+    public void FadeInTrack(int index)
+    {
+        activeMusicChannel.FadeInTrack(index, 1);
+    }
+
+    public void FadeOutTrack(int index)
+    {
+        activeMusicChannel.FadeOutTrack(index, 1);
+    }
 }

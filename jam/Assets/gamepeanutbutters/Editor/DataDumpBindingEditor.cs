@@ -41,12 +41,12 @@ public class DataDumpBindingEditor : Editor
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("OnIntUpdatedAsString"));
                 break;
             case "Single":
-                propertyLink.PropertyType = DataDumpBinding.DataType.Int;
+                propertyLink.PropertyType = DataDumpBinding.DataType.Float;
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("OnFloatUpdated"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("OnFloatUpdatedAsString"));
                 break;
             case "Boolean":
-                propertyLink.PropertyType = DataDumpBinding.DataType.Int;
+                propertyLink.PropertyType = DataDumpBinding.DataType.Bool;
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("OnBoolUpdated"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("OnBoolUpdatedAsString"));
                 break;

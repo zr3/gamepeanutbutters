@@ -38,7 +38,7 @@ public class MusicChannel : PlayableBehaviour
         {
             inputPlayables[i] = AudioClipPlayable.Create(graph, musicClip.ClipLayers[i].Clip, false);
             graph.Connect(inputPlayables[i], 0, mixer, i);
-            mixer.SetInputWeight(i, 1f);
+            mixer.SetInputWeight(i, i == 0 ? 1f : 0f);
         }
     }
 
@@ -134,5 +134,15 @@ public class MusicChannel : PlayableBehaviour
             OnBar?.Invoke();
         }
         OnBeat?.Invoke();
+    }
+
+    public void FadeInTrack(int index, float time)
+    {
+        if (mixer.GetInputCount() > index) mixer.SetInputWeight(index, 1);
+    }
+
+    public void FadeOutTrack(int index, float time)
+    {
+        if (mixer.GetInputCount() > index) mixer.SetInputWeight(index, 0);
     }
 }
