@@ -3181,7 +3181,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh18108
+  m_Name: pb_Mesh18176
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3573,7 +3573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &459592680
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7778,7 +7778,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh18130
+  m_Name: pb_Mesh18198
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8807,7 +8807,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  OnBarStart:
+  OnFirstBeat:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnBar:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
@@ -8828,13 +8833,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  mixer: {fileID: 24100000, guid: 57598159cb1b84940a6533211c5f153b, type: 2}
-  musicMixer: {fileID: 24100000, guid: c549ed9c6750b144cae37fe5de30d36b, type: 2}
   musicMixerGroup: {fileID: 2754353063484064655, guid: 57598159cb1b84940a6533211c5f153b,
-    type: 2}
-  channelAMixerGroup: {fileID: 31438396494843971, guid: c549ed9c6750b144cae37fe5de30d36b,
-    type: 2}
-  channelBMixerGroup: {fileID: -260680794725893121, guid: c549ed9c6750b144cae37fe5de30d36b,
     type: 2}
 --- !u!1 &1267410277
 GameObject:
@@ -10163,7 +10162,7 @@ GameObject:
   - component: {fileID: 1910381446}
   - component: {fileID: 1910381447}
   m_Layer: 0
-  m_Name: DeleteMe
+  m_Name: _delete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10209,7 +10208,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh18208
+  m_Name: pb_Mesh18274
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

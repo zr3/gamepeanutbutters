@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Playables;
 
@@ -13,7 +10,16 @@ public class MusicChannel : PlayableBehaviour
             .Endings
             .First(e => e.InSeconds(Clip.BeatsPerBar, Clip.BPM) > currentTimeInClipSpace + leadTime)
             .InSeconds(Clip.BeatsPerBar, Clip.BPM);
+    public MusicClip.MusicLocation MusicLocation => new MusicClip.MusicLocation
+    {
+        Beat = (nextBeat - 1) % Clip.BeatsPerBar + 1,
+        Bar = (nextBeat - 1) / Clip.BeatsPerBar + 1
+    };
     public Action OnFinished;
+    public Action OnLoop;
+    public Action OnFirstBeat;
+    public Action OnBar;
+    public Action OnBeat;
 
     private Playable mixer;
     private double clipLoopbackToTime, clipLoopbackFromTime, currentTimeInClipSpace, calculatedLoopTime;
@@ -36,6 +42,8 @@ public class MusicChannel : PlayableBehaviour
         }
     }
 
+    private bool firstBeatEventSent = false;
+
     public void Play(double delay = 0)
     {
         for (int i = 0; i < inputPlayables.Length; i++)
@@ -44,9 +52,13 @@ public class MusicChannel : PlayableBehaviour
         }
         clipLoopbackToTime = Clip.IntroEnd.InSeconds(Clip.BeatsPerBar, Clip.BPM);
         clipLoopbackFromTime = Clip.VampEnd.InSeconds(Clip.BeatsPerBar, Clip.BPM);
-        currentTimeInClipSpace = 0;
         calculatedLoopTime = Clip.LoopLength;
         endTime = double.MaxValue;
+
+        currentTimeInClipSpace = -delay;
+        nextBeatTime = 0;
+        beatLength = 60.0 / Clip.BPM;
+        nextBeat = 0;
     }
 
     public double Stop()
@@ -64,11 +76,12 @@ public class MusicChannel : PlayableBehaviour
 
     const double buffer = 0.05;
 
+    private double nextBeatTime, beatLength;
+    private int nextBeat;
+
     public override void PrepareFrame(Playable owner, FrameData info)
     {
-        // early exit
         if (mixer.GetInputCount() == 0) return;
-
         currentTimeInClipSpace += info.deltaTime;
 
         // loop clips
@@ -83,6 +96,9 @@ public class MusicChannel : PlayableBehaviour
                     audioClipPlayable.Seek(clipLoopbackToTime, offset);
                 }
                 currentTimeInClipSpace = clipLoopbackToTime - offset;
+                nextBeatTime = clipLoopbackToTime;
+                nextBeat = Clip.IntroEnd.InBeats(Clip.BeatsPerBar) - 1;
+                OnLoop();
             }
         } else if (currentTimeInClipSpace > endTime && !owner.IsDone())
         {
@@ -94,6 +110,28 @@ public class MusicChannel : PlayableBehaviour
             OnFinished();
         }
 
+        // notify beats and bars
+        if (currentTimeInClipSpace >= nextBeatTime)
+        {
+            onBeat();
+            nextBeatTime += beatLength;
+        }
+
         base.PrepareFrame(owner, info);
+    }
+
+    private void onBeat()
+    {
+        nextBeat++;
+        if (!firstBeatEventSent)
+        {
+            OnFirstBeat();
+            firstBeatEventSent = true;
+        }
+        if ((nextBeat - 1) % Clip.BeatsPerBar == 0)
+        {
+            OnBar?.Invoke();
+        }
+        OnBeat?.Invoke();
     }
 }
