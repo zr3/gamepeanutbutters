@@ -87,26 +87,22 @@ public class MusicBox : MonoBehaviour {
         activeMusicChannel.OnLoop = () => {
             if (CheckCurrentClip(index))
             {
-                Debug.Log($"Looped {CurrentClip.Name}");
                 OnClipLooped.Invoke();
             }
         };
         activeMusicChannel.OnFirstBeat = () =>
         {
-            Debug.Log($"First beat {CurrentClip.Name}");
             OnFirstBeat.Invoke();
         };
         activeMusicChannel.OnBar = () => {
             if (CheckCurrentClip(index))
             {
-                Debug.Log($"Bar {CurrentClip.Name}");
                 OnBar.Invoke();
             }
         };
         activeMusicChannel.OnBeat = () => {
             if (CheckCurrentClip(index))
             {
-                Debug.Log($"Beat {CurrentClip.Name}");
                 OnBeat.Invoke();
             }
         };

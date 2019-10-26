@@ -46,19 +46,20 @@ public class MusicChannel : PlayableBehaviour
 
     public void Play(double delay = 0)
     {
+        double beginningInClipSpace = Clip.Beginning.InSeconds(Clip.BeatsPerBar, Clip.BPM);
         for (int i = 0; i < inputPlayables.Length; i++)
         {
-            inputPlayables[i].Seek(0, delay);
+            inputPlayables[i].Seek(beginningInClipSpace, delay);
         }
         clipLoopbackToTime = Clip.IntroEnd.InSeconds(Clip.BeatsPerBar, Clip.BPM);
         clipLoopbackFromTime = Clip.VampEnd.InSeconds(Clip.BeatsPerBar, Clip.BPM);
         calculatedLoopTime = Clip.LoopLength;
         endTime = double.MaxValue;
 
-        currentTimeInClipSpace = -delay;
-        nextBeatTime = 0;
+        currentTimeInClipSpace = beginningInClipSpace - delay;
+        nextBeatTime = beginningInClipSpace;
         beatLength = 60.0 / Clip.BPM;
-        nextBeat = 0;
+        nextBeat = Clip.Beginning.InBeats(Clip.BeatsPerBar) - 1;
     }
 
     public double Stop()
