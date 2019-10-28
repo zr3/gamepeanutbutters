@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af155caa27392f9479a94dd8f00b6db7, type: 3}
+  m_Name: BossMusicClip
+  m_EditorClassIdentifier: 
+  Name: Tense
+  ClipLayers:
+  - Clip: {fileID: 8300000, guid: 4b487c39c03a0fc4a93f21b641fd601f, type: 3}
+  - Clip: {fileID: 8300000, guid: d3a739d64236ff647a6715f442a80ee3, type: 3}
+  - Clip: {fileID: 8300000, guid: f166da7f22a20fb44bcadd9ffd765792, type: 3}
+  BPM: 120
+  BeatsPerBar: 4
+  Beginning:
+    Bar: 1
+    Beat: 1
+  Endings:
+  - Bar: 5
+    Beat: 1
+  - Bar: 9
+    Beat: 1
+  IntroEnd:
+    Bar: 1
+    Beat: 1
+  VampEnd:
+    Bar: 9
+    Beat: 1
