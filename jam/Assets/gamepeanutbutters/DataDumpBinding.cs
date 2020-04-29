@@ -31,26 +31,35 @@ public class DataDumpBinding : MonoBehaviour
         OnBoolUpdatedAsString = null;
     }
 
-    private void Awake()
+    private void OnEnable()
     {
         switch (PropertyType)
         {
             case DataType.String:
-                if (OnStringUpdated != null) DataDump.Instance.OnStringUpdated.AddListener(val => OnStringUpdated.Invoke(val));
+                if (OnStringUpdated != null) GetOrCreate<string, StringEvent>(DataDump.Instance.OnStringUpdated, DataDumpProperty, val => OnStringUpdated.Invoke(val));
                 break;
             case DataType.Int:
-                if (OnIntUpdated != null) DataDump.Instance.OnIntUpdated.AddListener(val => OnIntUpdated.Invoke(val));
-                if (OnIntUpdatedAsString != null) DataDump.Instance.OnIntUpdated.AddListener(val => OnIntUpdatedAsString.Invoke(val.ToString()));
+                if (OnIntUpdated != null) GetOrCreate<int, IntEvent>(DataDump.Instance.OnIntUpdated, DataDumpProperty, val => OnIntUpdated.Invoke(val));
+                if (OnIntUpdatedAsString != null) GetOrCreate<int, IntEvent>(DataDump.Instance.OnIntUpdated, DataDumpProperty, val => OnIntUpdatedAsString.Invoke(val.ToString()));
                 break;
             case DataType.Float:
-                if (OnFloatUpdated != null) DataDump.Instance.OnFloatUpdated.AddListener(val => OnFloatUpdated.Invoke(val));
-                if (OnFloatUpdatedAsString != null) DataDump.Instance.OnFloatUpdated.AddListener(val => OnFloatUpdatedAsString.Invoke(val.ToString()));
+                if (OnFloatUpdated != null) GetOrCreate<float, FloatEvent>(DataDump.Instance.OnFloatUpdated, DataDumpProperty, val => OnFloatUpdated.Invoke(val));
+                if (OnFloatUpdatedAsString != null) GetOrCreate<float, FloatEvent>(DataDump.Instance.OnFloatUpdated, DataDumpProperty, val => OnFloatUpdatedAsString.Invoke(val.ToString()));
                 break;
             case DataType.Bool:
-                if (OnBoolUpdated != null) DataDump.Instance.OnBoolUpdated.AddListener(val => OnBoolUpdated.Invoke(val));
-                if (OnBoolUpdatedAsString != null) DataDump.Instance.OnBoolUpdated.AddListener(val => OnBoolUpdatedAsString.Invoke(val.ToString()));
+                if (OnBoolUpdated != null) GetOrCreate<bool, BoolEvent>(DataDump.Instance.OnBoolUpdated, DataDumpProperty, val => OnBoolUpdated.Invoke(val));
+                if (OnBoolUpdatedAsString != null) GetOrCreate<bool, BoolEvent>(DataDump.Instance.OnBoolUpdated, DataDumpProperty, val => OnBoolUpdatedAsString.Invoke(val.ToString()));
                 break;
         }
+    }
+
+    private void GetOrCreate<T, T2>(Dictionary<string, T2> dumpEvent, string key, UnityAction<T> @event) where T2 : UnityEvent<T>, new()
+    {
+        if (!dumpEvent.ContainsKey(key))
+        {
+            dumpEvent[key] = new T2();
+        }
+        dumpEvent[key].AddListener(@event);
     }
 
     private void OnDisable()
@@ -58,19 +67,19 @@ public class DataDumpBinding : MonoBehaviour
         switch (PropertyType)
         {
             case DataType.String:
-                if (OnStringUpdated != null) DataDump.Instance.OnStringUpdated.RemoveListener(val => OnStringUpdated.Invoke(val));
+                if (OnStringUpdated != null) DataDump.Instance.OnStringUpdated[DataDumpProperty].RemoveListener(val => OnStringUpdated.Invoke(val));
                 break;
             case DataType.Int:
-                if (OnIntUpdated != null) DataDump.Instance.OnIntUpdated.RemoveListener(val => OnIntUpdated.Invoke(val));
-                if (OnIntUpdatedAsString != null) DataDump.Instance.OnIntUpdated.RemoveListener(val => OnIntUpdatedAsString.Invoke(val.ToString()));
+                if (OnIntUpdated != null) DataDump.Instance.OnIntUpdated[DataDumpProperty].RemoveListener(val => OnIntUpdated.Invoke(val));
+                if (OnIntUpdatedAsString != null) DataDump.Instance.OnIntUpdated[DataDumpProperty].RemoveListener(val => OnIntUpdatedAsString.Invoke(val.ToString()));
                 break;
             case DataType.Float:
-                if (OnFloatUpdated != null) DataDump.Instance.OnFloatUpdated.RemoveListener(val => OnFloatUpdated.Invoke(val));
-                if (OnFloatUpdatedAsString != null) DataDump.Instance.OnFloatUpdated.RemoveListener(val => OnFloatUpdatedAsString.Invoke(val.ToString()));
+                if (OnFloatUpdated != null) DataDump.Instance.OnFloatUpdated[DataDumpProperty].RemoveListener(val => OnFloatUpdated.Invoke(val));
+                if (OnFloatUpdatedAsString != null) DataDump.Instance.OnFloatUpdated[DataDumpProperty].RemoveListener(val => OnFloatUpdatedAsString.Invoke(val.ToString()));
                 break;
             case DataType.Bool:
-                if (OnBoolUpdated != null) DataDump.Instance.OnBoolUpdated.RemoveListener(val => OnBoolUpdated.Invoke(val));
-                if (OnBoolUpdatedAsString != null) DataDump.Instance.OnBoolUpdated.RemoveListener(val => OnBoolUpdatedAsString.Invoke(val.ToString()));
+                if (OnBoolUpdated != null) DataDump.Instance.OnBoolUpdated[DataDumpProperty].RemoveListener(val => OnBoolUpdated.Invoke(val));
+                if (OnBoolUpdatedAsString != null) DataDump.Instance.OnBoolUpdated[DataDumpProperty].RemoveListener(val => OnBoolUpdatedAsString.Invoke(val.ToString()));
                 break;
         }
     }

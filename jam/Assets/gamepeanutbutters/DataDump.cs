@@ -34,24 +34,30 @@ public class DataDump : MonoBehaviour {
             switch(value)
             {
                 case string s:
-                    _instance.OnStringUpdated.Invoke(value as string);
+                    if (_instance.OnStringUpdated.TryGetValue(key, out var @sevent)) @sevent.Invoke(value as string);
                     break;
                 case int i:
-                    _instance.OnIntUpdated.Invoke(value as int? ?? default);
+                    if (_instance.OnIntUpdated.TryGetValue(key, out var @ievent)) @ievent.Invoke(value as int? ?? default);
                     break;
                 case float f:
-                    _instance.OnFloatUpdated.Invoke(value as float? ?? default);
+                    if (_instance.OnFloatUpdated.TryGetValue(key, out var @fevent)) @fevent.Invoke(value as float? ?? default);
                     break;
                 case bool b:
-                    _instance.OnBoolUpdated.Invoke(value as bool? ?? default);
+                    if (_instance.OnBoolUpdated.TryGetValue(key, out var @bevent)) @bevent.Invoke(value as bool? ?? default);
                     break;
             }
     }
 
-    public StringEvent OnStringUpdated;
-    public IntEvent OnIntUpdated;
-    public FloatEvent OnFloatUpdated;
-    public BoolEvent OnBoolUpdated;
+    public Dictionary<string, StringEvent> OnStringUpdated = new Dictionary<string, StringEvent>();
+    public Dictionary<string, IntEvent> OnIntUpdated = new Dictionary<string, IntEvent>();
+    public Dictionary<string, FloatEvent> OnFloatUpdated = new Dictionary<string, FloatEvent>();
+    public Dictionary<string, BoolEvent> OnBoolUpdated = new Dictionary<string, BoolEvent>();
+
+    private void OnDestroy()
+    {
+        Destroy(primaryState);
+        primaryState = null;
+    }
 }
 
 [Serializable]
