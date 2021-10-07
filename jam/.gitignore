@@ -6,6 +6,7 @@
 /Assets/AssetStoreTools*
 /SourceAssets
 /Screenshots
+/Logs
 
 # Visual Studio 2015 cache directory
 /.vs/

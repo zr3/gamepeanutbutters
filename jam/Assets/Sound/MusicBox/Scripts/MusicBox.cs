@@ -160,7 +160,6 @@ public class MusicBox : MonoBehaviour {
             {
                 var audioSource = CreateAudioSource();
                 var playableOutput = AudioPlayableOutput.Create(playableGraph, "MusicOut", audioSource);
-                playableOutput.SetSourceOutputPort(0);
                 return (audioSource, playableOutput);
             }
         }

@@ -14,7 +14,6 @@ public class TextJacker : MonoBehaviour {
     private string originalText;
     private string lastText;
 
-    private float outlineTimer = 0f;
     private float textTimer = 0f;
     private readonly char[] chars = new[] {
         '!', '#', '$', '/', '=', '*', '^', '(', ')'
